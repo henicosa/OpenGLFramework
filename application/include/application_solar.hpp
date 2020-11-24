@@ -5,6 +5,8 @@
 #include "model.hpp"
 #include "structs.hpp"
 
+#include "node.hpp"
+
 // gpu representation of model
 class ApplicationSolar : public Application {
  public:
