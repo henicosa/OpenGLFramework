@@ -70,7 +70,7 @@ Node::Node(std::shared_ptr<Node> pr, std::string const& n, std::string const& p,
     children.push_back(node);
   };
 
-  Node Node::removeChildren(std::string node_name) {
+  std::shared_ptr<Node> Node::removeChildren(std::string node_name) {
     auto element = children.begin();
     while (element != children.end()) {
       if ((*element)->getName() == node_name) {
