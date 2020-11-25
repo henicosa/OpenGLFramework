@@ -40,11 +40,14 @@ class ApplicationSolar : public Application {
 
   // cpu representation of model
   model_object planet_object;
-  
+
   // camera transform matrix
   glm::fmat4 m_view_transform;
   // camera projection matrix
   glm::fmat4 m_view_projection;
+
+  // SceneGraph
+  // SceneGraph scene;
 };
 
 #endif
