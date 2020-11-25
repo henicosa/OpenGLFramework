@@ -18,6 +18,7 @@ class Node {
   // getter
   //
   std::shared_ptr<Node> getParent() const;
+  // uses name to identify children
   std::shared_ptr<Node> getChildren(std::string node_name) const;
   std::list<std::shared_ptr<Node>>  getChildrenList() const;
   std::string getName() const;
@@ -25,8 +26,6 @@ class Node {
   glm::fmat4 getWorldTransform() const;
   std::string getPath() const;
   int getDepth() const;
-
-  void test();
 
   //
   // setter
@@ -38,13 +37,21 @@ class Node {
   void addChildren(std::shared_ptr<Node> node);
   std::shared_ptr<Node> removeChildren(std::string node_name);
 
+  // protected for child classes access 
  protected:
+  // parent node (for root nullptr)
   std::shared_ptr<Node> parent;
+  // name
   std::string name;
+  // local Transformation
   glm::fmat4 localTransform;
+  // world Transformation
   glm::fmat4 worldTransform;
+  // path (root/node/children_node)
   std::string path;
+  // depth (root = 0, root/node = 1 ...)
   int depth;
+  // list of children nodes
   std::list<std::shared_ptr<Node>> children;
 
 };

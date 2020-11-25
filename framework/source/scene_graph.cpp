@@ -5,8 +5,8 @@
 // Singleton pattern inspired by https://cplusplus-development.de/c/cplusplus-erweitert/entwurfsmuster-singleton-pattern
 
 
-  // Singleton
-  // only instancable with controlling method
+// Singleton
+// only instancable with controlling method
 
 /*SceneGraph* SceneGraph::getInstance() {
     if (!instanceFlag)

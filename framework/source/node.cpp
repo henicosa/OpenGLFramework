@@ -6,10 +6,6 @@
 #include <iostream>
 #include <memory>
 
-void Node::test() {
-  std::cout << "test";
-}
-
 Node::Node() 
  :parent(nullptr)
  ,name{"root"}
@@ -88,15 +84,17 @@ Node::Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lma
     children.push_back(node);
   }
 
+  // uses name to identify element, returns element after the deleted one
   std::shared_ptr<Node> Node::removeChildren(std::string node_name) {
     auto element = children.begin();
     while (element != children.end()) {
-      if ((*element)->getName() == node_name) {
-        element = children.erase(element);
+      if ((*element)->getName().compare(node_name) == 0) {
+        return *(children.erase(element));
       } else {
         element++;
       }
     }
+    return nullptr;
   }
   
 

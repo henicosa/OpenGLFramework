@@ -11,6 +11,10 @@ CameraNode::CameraNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat
  ,projectionMatrix(pmat)
 {}
 
+
+  //
+  // getter
+  //
   bool CameraNode::getPerspective() const {
     return isPerspective;
   }

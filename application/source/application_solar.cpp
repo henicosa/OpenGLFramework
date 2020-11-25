@@ -65,22 +65,21 @@ ApplicationSolar::~ApplicationSolar() {
   glDeleteVertexArrays(1, &planet_object.vertex_AO);
 }
 
+// starts rendering process 
 void ApplicationSolar::render() const {
-  glm::fmat4 model_matrix = glm::fmat4{};
-  scene->getRoot()->setLocalTransform(model_matrix);
-  scene->getRoot()->setWorldTransform(model_matrix);
   traverse_render(scene->getRoot());
 }
 
+// traverses the SceneGraph recursively, repeats rendering process
 void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
-  std::list<std::shared_ptr<Node>> planet_list = node->getChildrenList();
 
   if (node->getName() != "root") {
     glUseProgram(m_shaders.at("planet").handle);
-    // Rotation from Time (scale with factor), rotation axis
-    
-    // position
+
+    // Transformation from parent * Rotation from Time (scale with factor), rotation axis
     glm::fmat4 model_matrix = node->getParent()->getWorldTransform() * glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f}) * node->getLocalTransform();
+
+    // save transformation in WorldTransformation
     node->setWorldTransform(model_matrix);
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                       1, GL_FALSE, glm::value_ptr(model_matrix));
@@ -97,6 +96,8 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
     glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
   }
 
+  // Repeat rendering for all childrens
+  std::list<std::shared_ptr<Node>> planet_list = node->getChildrenList();
   for (auto planet : planet_list) traverse_render(planet);
   
 }
