@@ -37,7 +37,10 @@ Node::Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lma
   }
 
   std::shared_ptr<Node> Node::getChildren(std::string node_name) const {
-    return parent;
+    for (auto node : children) {
+      if (node->getName().compare(node_name) == 0) return node;
+    }
+    return nullptr;
   }
 
   std::list<std::shared_ptr<Node>> Node::getChildrenList() const {

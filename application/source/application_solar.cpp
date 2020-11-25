@@ -37,15 +37,26 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
   //bool SceneGraph::instanceFlag = false;
   //SceneGraph* SceneGraph::single = NULL;
   scene = new SceneGraph();
-  std::shared_ptr<Node> p1 = std::make_shared<Node>(Node(scene->getRoot(), "merc", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 1.0f}), glm::fmat4()));
+  std::shared_ptr<Node> p0 = std::make_shared<Node>(Node(scene->getRoot(), "sun", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p0);
+  std::shared_ptr<Node> p1 = std::make_shared<Node>(Node(scene->getRoot(), "mercury", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 5.0f}), glm::fmat4()));
   scene->getRoot()->addChildren(p1);
-  std::shared_ptr<Node> p2 = std::make_shared<Node>(Node(scene->getRoot(), "ven", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 4.0f}), glm::fmat4()));
+  std::shared_ptr<Node> p2 = std::make_shared<Node>(Node(scene->getRoot(), "venus", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 8.0f}), glm::fmat4()));
   scene->getRoot()->addChildren(p2);
-  std::shared_ptr<Node> p3 = std::make_shared<Node>(Node(scene->getRoot(), "earth", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 6.0f}), glm::fmat4()));
+  std::shared_ptr<Node> p3 = std::make_shared<Node>(Node(scene->getRoot(), "earth", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 12.0f}), glm::fmat4()));
   scene->getRoot()->addChildren(p3);
-  std::shared_ptr<Node> p4 = std::make_shared<Node>(Node(scene->getRoot(), "mars", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 10.0f}), glm::fmat4()));
+  std::shared_ptr<Node> p4 = std::make_shared<Node>(Node(scene->getRoot(), "mars", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 15.0f}), glm::fmat4()));
   scene->getRoot()->addChildren(p4);
-
+  std::shared_ptr<Node> p5 = std::make_shared<Node>(Node(scene->getRoot(), "jupiter", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 40.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p5);
+  std::shared_ptr<Node> p6 = std::make_shared<Node>(Node(scene->getRoot(), "saturn", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 50.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p6);
+  std::shared_ptr<Node> p7 = std::make_shared<Node>(Node(scene->getRoot(), "uranus", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 57.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p7);
+  std::shared_ptr<Node> p8 = std::make_shared<Node>(Node(scene->getRoot(), "jupiter", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 70.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p8);
+  std::shared_ptr<Node> m1 = std::make_shared<Node>(Node(p3, "moon", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 2.0f}), glm::fmat4()));
+  scene->getRoot()->getChildren("earth")->addChildren(m1);
 }
 
 ApplicationSolar::~ApplicationSolar() {
@@ -55,6 +66,9 @@ ApplicationSolar::~ApplicationSolar() {
 }
 
 void ApplicationSolar::render() const {
+  glm::fmat4 model_matrix = glm::fmat4{};
+  scene->getRoot()->setLocalTransform(model_matrix);
+  scene->getRoot()->setWorldTransform(model_matrix);
   traverse_render(scene->getRoot());
 }
 
@@ -64,9 +78,10 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
   if (node->getName() != "root") {
     glUseProgram(m_shaders.at("planet").handle);
     // Rotation from Time (scale with factor), rotation axis
-    glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f});
+    
     // position
-    model_matrix = model_matrix * node->getLocalTransform();
+    glm::fmat4 model_matrix = node->getParent()->getWorldTransform() * glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f}) * node->getLocalTransform();
+    node->setWorldTransform(model_matrix);
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                       1, GL_FALSE, glm::value_ptr(model_matrix));
 
@@ -186,7 +201,8 @@ void ApplicationSolar::keyCallback(int key, int action, int mods) {
 
 //handle delta mouse movement input
 void ApplicationSolar::mouseCallback(double pos_x, double pos_y) {
-  // mouse handling
+  //m_view_transform = glm::rotate(m_view_transform, 0.01f, glm::fvec3{pos_x, pos_y, 0.0f});
+  //uploadView();
 }
 
 //handle resizing
