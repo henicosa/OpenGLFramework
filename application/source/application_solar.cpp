@@ -4,8 +4,14 @@
 #include "utils.hpp"
 #include "shader_loader.hpp"
 #include "model_loader.hpp"
+#include "node.hpp"
+#include "scene_graph.hpp"
+
+// foreach
+#include <algorithm>
 
 #include <glbinding/gl/gl.h>
+#include <iterator>
 #include <memory>
 // use gl definitions from glbinding 
 using namespace gl;
@@ -28,7 +34,18 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
 {
   initializeGeometry();
   initializeShaderPrograms();
-  // scene = new SceneGraph("universe", std::make_shared<Node>(Node()));
+  //bool SceneGraph::instanceFlag = false;
+  //SceneGraph* SceneGraph::single = NULL;
+  scene = new SceneGraph();
+  std::shared_ptr<Node> p1 = std::make_shared<Node>(Node(scene->getRoot(), "merc", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 1.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p1);
+  std::shared_ptr<Node> p2 = std::make_shared<Node>(Node(scene->getRoot(), "ven", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 4.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p2);
+  std::shared_ptr<Node> p3 = std::make_shared<Node>(Node(scene->getRoot(), "earth", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 6.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p3);
+  std::shared_ptr<Node> p4 = std::make_shared<Node>(Node(scene->getRoot(), "mars", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 10.0f}), glm::fmat4()));
+  scene->getRoot()->addChildren(p4);
+
 }
 
 ApplicationSolar::~ApplicationSolar() {
@@ -38,19 +55,18 @@ ApplicationSolar::~ApplicationSolar() {
 }
 
 void ApplicationSolar::render() const {
+  traverse_render(scene->getRoot());
+}
 
-  // traverse scene graph
-  //bool bottom, right = false;
+void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
+  std::list<std::shared_ptr<Node>> planet_list = node->getChildrenList();
 
-  //while (not (bottom and right)) {
-  for (int i = 0; i < 9; i++) {
-    // bind shader to upload uniforms
-
+  if (node->getName() != "root") {
     glUseProgram(m_shaders.at("planet").handle);
     // Rotation from Time (scale with factor), rotation axis
     glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f});
     // position
-    model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, float(i) * 3.0f});
+    model_matrix = model_matrix * node->getLocalTransform();
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                       1, GL_FALSE, glm::value_ptr(model_matrix));
 
@@ -65,6 +81,9 @@ void ApplicationSolar::render() const {
     // draw bound vertex array using bound shader
     glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
   }
+
+  for (auto planet : planet_list) traverse_render(planet);
+  
 }
 
 void ApplicationSolar::uploadView() {

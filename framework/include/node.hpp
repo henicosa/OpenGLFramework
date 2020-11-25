@@ -13,7 +13,7 @@ class Node {
  public:
 
   Node();
-
+  Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat);
   //
   // getter
   //
@@ -21,10 +21,12 @@ class Node {
   std::shared_ptr<Node> getChildren(std::string node_name) const;
   std::list<std::shared_ptr<Node>>  getChildrenList() const;
   std::string getName() const;
-  std::string getPath() const;
-  int getDepth() const;
   glm::fmat4 getLocalTransform() const;
   glm::fmat4 getWorldTransform() const;
+  std::string getPath() const;
+  int getDepth() const;
+
+  void test();
 
   //
   // setter
@@ -38,12 +40,12 @@ class Node {
 
  protected:
   std::shared_ptr<Node> parent;
-  std::list<std::shared_ptr<Node>> children;
   std::string name;
-  std::string path;
-  int depth;
   glm::fmat4 localTransform;
   glm::fmat4 worldTransform;
+  std::string path;
+  int depth;
+  std::list<std::shared_ptr<Node>> children;
 
 };
 

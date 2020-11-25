@@ -15,19 +15,23 @@
 class SceneGraph {
  public:
 
+  SceneGraph();
+
   // Singleton
   // only instancable with controlling method
-  static SceneGraph* getInstance(std::string n, std::shared_ptr<Node> node);
+  /*static SceneGraph* getInstance();
   // Reset flag if deleted
   ~SceneGraph()
 		{
 			instanceFlag = false;
 		}
+  */
+  
   //
   // getter
   //
   std::string getName() const;
-  Node getRoot() const;
+  std::shared_ptr<Node> getRoot() const;
 
   //
   // setter
@@ -40,9 +44,8 @@ class SceneGraph {
   std::shared_ptr<Node> root;
 
   // Singleton Pattern
-  static bool instanceFlag;
-	static SceneGraph *single;
-	SceneGraph(std::string n, std::shared_ptr<Node> node);
+  /*static bool instanceFlag;
+	static SceneGraph *single;*/
 };
 
 #endif

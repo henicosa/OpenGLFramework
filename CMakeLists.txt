@@ -85,8 +85,8 @@ if(NOT APPLE)
     add_executable(6_vao application/source/application_vao.cpp)
     target_link_libraries(6_vao framework)
 
-	add_executable(7_node application/source/node.cpp)
-    target_link_libraries(7_node framework)
+    add_executable(7_node application/source/node.cpp)
+      target_link_libraries(7_node framework)
   endif()
 endif()
 

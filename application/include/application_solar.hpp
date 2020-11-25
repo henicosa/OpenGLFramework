@@ -9,6 +9,7 @@
 #include "geometry_node.hpp"
 #include "camera_node.hpp"
 #include "scene_graph.hpp"
+#include <memory>
 
 // gpu representation of model
 class ApplicationSolar : public Application {
@@ -27,6 +28,7 @@ class ApplicationSolar : public Application {
 
   // draw all objects
   void render() const;
+  void traverse_render(std::shared_ptr<Node> node) const;
 
  protected:
   void initializeShaderPrograms();
@@ -47,7 +49,7 @@ class ApplicationSolar : public Application {
   glm::fmat4 m_view_projection;
 
   // SceneGraph
-  // SceneGraph scene;
+  SceneGraph* scene;
 };
 
 #endif

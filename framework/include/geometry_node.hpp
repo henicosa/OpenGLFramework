@@ -6,7 +6,7 @@
 
 class GeometryNode : protected Node {
  public:
-  GeometryNode(std::shared_ptr<Node> pr, std::string const& n, std::string const& p, int d, glm::fmat4 const& lmat, glm::fmat4 const& wmat, model geo);
+  GeometryNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, model geo);
 
   //
   // getter
