@@ -36,7 +36,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
   initializeShaderPrograms();
   //bool SceneGraph::instanceFlag = false;
   //SceneGraph* SceneGraph::single = NULL;
-  scene = new SceneGraph();
+  scene = SceneGraph::getInstance();
   std::shared_ptr<Node> p0 = std::make_shared<Node>(Node(scene->getRoot(), "sun", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4()));
   scene->getRoot()->addChildren(p0);
   std::shared_ptr<Node> p1 = std::make_shared<Node>(Node(scene->getRoot(), "mercury", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 5.0f}), glm::fmat4()));

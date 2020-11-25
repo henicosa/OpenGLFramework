@@ -8,7 +8,10 @@
 // Singleton
 // only instancable with controlling method
 
-/*SceneGraph* SceneGraph::getInstance() {
+// instancing class
+bool SceneGraph::instanceFlag = false;
+SceneGraph* SceneGraph::single = NULL;
+SceneGraph* SceneGraph::getInstance() {
     if (!instanceFlag)
 	  {
 		  single = new SceneGraph();
@@ -19,7 +22,7 @@
 	  }
   }
   
-  */
+  
 
   SceneGraph::SceneGraph()
     :name("scene")

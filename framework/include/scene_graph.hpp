@@ -10,23 +10,24 @@
 
 #include <memory>
 
+
+
 // Singleton pattern inspired by https://cplusplus-development.de/c/cplusplus-erweitert/entwurfsmuster-singleton-pattern
+
 
 class SceneGraph {
  public:
 
-  SceneGraph();
-
   // Singleton
   // only instancable with controlling method
-  /*static SceneGraph* getInstance();
+  static SceneGraph* getInstance();
   // Reset flag if deleted
   ~SceneGraph()
 		{
 			instanceFlag = false;
 		}
-  */
   
+
   //
   // getter
   //
@@ -44,8 +45,11 @@ class SceneGraph {
   std::shared_ptr<Node> root;
 
   // Singleton Pattern
-  /*static bool instanceFlag;
-	static SceneGraph *single;*/
+  SceneGraph();
+  static bool instanceFlag;
+	static SceneGraph *single;
 };
+
+
 
 #endif
