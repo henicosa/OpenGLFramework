@@ -4,8 +4,8 @@
 #include <functional>
 #include <iostream>
 
-GeometryNode::GeometryNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, model geo)
- :Node(pr, n, lmat, wmat)
+GeometryNode::GeometryNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, float r, model geo)
+ :Node(pr, n, lmat, wmat, r)
  ,geometry(geo)
 {}
 

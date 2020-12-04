@@ -4,8 +4,8 @@
 #include <functional>
 #include <iostream>
 
-CameraNode::CameraNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, bool perspective, bool enabled, glm::fmat4 pmat)
- :Node(pr,n, lmat, wmat)
+CameraNode::CameraNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, float r, bool perspective, bool enabled, glm::fmat4 pmat)
+ :Node(pr,n, lmat, wmat, r)
  ,isPerspective(perspective)
  ,isEnabled(enabled)
  ,projectionMatrix(pmat)

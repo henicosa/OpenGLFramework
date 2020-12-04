@@ -13,13 +13,15 @@ Node::Node()
  ,worldTransform{glm::fmat4()}
  ,path{"root"}
  ,depth{0}
+ ,rotation{0}
 {}
 
-Node::Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat)
+Node::Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, float r)
  :parent(pr)
  ,name{n}
  ,localTransform{lmat}
  ,worldTransform{wmat}
+ ,rotation{r}
 {
   depth = pr->getDepth() + 1;
   path = pr->getPath() + "/" + name;
@@ -63,6 +65,9 @@ Node::Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lma
     return worldTransform;
   }
 
+  float Node::getRotation() const {
+    return rotation;
+  }
 
   //
   // setter
@@ -71,12 +76,25 @@ Node::Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lma
     parent = node;
   }
 
+  void Node::setRotation(float r) {
+    rotation = r;
+  }
+
+
+  //TODO Check formulas
+
   void Node::setLocalTransform(glm::fmat4 mat) {
     localTransform = mat;
+    if (parent != nullptr) {
+      worldTransform = parent->getWorldTransform() * mat;
+    }
   }
 
   void Node::setWorldTransform(glm::fmat4 mat) {
     worldTransform = mat;
+    if (parent != nullptr) {
+      localTransform = glm::inverse(parent->getWorldTransform()) *  mat;
+    }
   }
 
   // modify Children List

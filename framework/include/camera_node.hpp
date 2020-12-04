@@ -7,7 +7,7 @@
 class CameraNode : protected Node {
  public:
 
-  CameraNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, bool perspective, bool enabled, glm::fmat4 pmat);
+  CameraNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, float r, bool perspective, bool enabled, glm::fmat4 pmat);
 
   //
   // getter

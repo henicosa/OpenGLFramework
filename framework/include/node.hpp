@@ -13,7 +13,7 @@ class Node {
  public:
 
   Node();
-  Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat);
+  Node(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, float r);
   //
   // getter
   //
@@ -26,6 +26,7 @@ class Node {
   glm::fmat4 getWorldTransform() const;
   std::string getPath() const;
   int getDepth() const;
+  float getRotation() const;
 
   //
   // setter
@@ -33,6 +34,7 @@ class Node {
   void setParent(std::shared_ptr<Node> node);
   void setLocalTransform(glm::fmat4 mat);
   void setWorldTransform(glm::fmat4 mat);
+  void setRotation(float r);
   // modify Children List
   void addChildren(std::shared_ptr<Node> node);
   std::shared_ptr<Node> removeChildren(std::string node_name);
@@ -53,6 +55,8 @@ class Node {
   int depth;
   // list of children nodes
   std::list<std::shared_ptr<Node>> children;
+  // rotation factor applied in rendering
+  float rotation;
 
 };
 
