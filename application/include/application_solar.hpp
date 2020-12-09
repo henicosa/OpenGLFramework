@@ -2,6 +2,7 @@
 #define APPLICATION_SOLAR_HPP
 
 #include "application.hpp"
+#include "application_vao.hpp"
 #include "model.hpp"
 #include "structs.hpp"
 
@@ -42,6 +43,7 @@ class ApplicationSolar : public Application {
 
   // cpu representation of model
   model_object planet_object;
+  model_object stars_object;
 
   // camera transform matrix
   glm::fmat4 m_view_transform;
@@ -50,6 +52,7 @@ class ApplicationSolar : public Application {
 
   // SceneGraph
   SceneGraph* scene;
+  //std::shared_ptr<ApplicationVao> appvao;
 };
 
 #endif

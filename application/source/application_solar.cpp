@@ -57,6 +57,53 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
   scene->getRoot()->addChildren(p8);
   std::shared_ptr<Node> m1 = std::make_shared<Node>(Node(p3, "moon", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 2.0f}), glm::fmat4(), 1.0f));
   scene->getRoot()->getChildren("earth")->addChildren(m1);
+  //std::shared_ptr<Node> cam = std::make_shared<Node>(CameraNode(p3, "moon", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 2.0f}), glm::fmat4(), 1.0f, true, true, glm::fmat4()));
+  scene->getRoot()->getChildren("earth")->addChildren(m1);
+
+  float stars_data[6] {5.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f};
+
+  // generate vertex array object
+  glGenVertexArrays(1, &stars_object.vertex_AO);
+  // bind the array for attaching buffers
+  glBindVertexArray(stars_object.vertex_AO);
+
+  // generate generic buffer
+  glGenBuffers(1, &stars_object.vertex_BO);
+  // bind this as an vertex array buffer containing all attributes
+  glBindBuffer(GL_ARRAY_BUFFER, stars_object.vertex_BO);
+  // configure currently bound array buffer
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, stars_data, GL_STATIC_DRAW);
+
+  // activate first attribute on gpu
+  glEnableVertexAttribArray(0);
+  // first attribute is 3 floats with no offset & stride (https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml)
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  // activate second attribute on gpu
+  //glEnableVertexAttribArray(1);
+  // second attribute is 3 floats with no offset & stride
+  //glVertexAttribPointer(1, model::NORMAL.components, model::NORMAL.type, GL_FALSE, planet_model.vertex_bytes, planet_model.offsets[model::NORMAL]);
+
+   // generate generic buffer
+  glGenBuffers(1, &stars_object.element_BO);
+  // bind this as an vertex array buffer containing all attributes
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, stars_object.element_BO);
+  // configure currently bound array buffer
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6, stars_data, GL_STATIC_DRAW);
+
+  // store type of primitive to draw
+  stars_object.draw_mode = GL_LINE;
+  // transfer number of indices to model object 
+  stars_object.num_elements = GLsizei(6);
+
+  //glGenVertexArrays() generates new Vertex arrays
+  //glBindVertexArray() 
+
+  //glGenBuffers()
+  //glBindBuffer(GL_ARRAY_BUFFER, )
+  //glBufferData(GL_ARRAY_BUFFER, )
+
+  //glEnableVertexAttribArray()
+  //glVertexAttribPointer()
 }
 
 ApplicationSolar::~ApplicationSolar() {
@@ -67,6 +114,12 @@ ApplicationSolar::~ApplicationSolar() {
 
 // starts rendering process 
 void ApplicationSolar::render() const {
+  // bind the VAO to draw
+  glBindVertexArray(stars_object.vertex_AO);
+
+  // draw bound vertex array using bound shader
+  glDrawElements(stars_object.draw_mode, stars_object.num_elements, model::INDEX.type, NULL);
+
   traverse_render(scene->getRoot());
 }
 
