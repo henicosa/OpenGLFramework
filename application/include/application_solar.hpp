@@ -41,10 +41,8 @@ class ApplicationSolar : public Application {
   // upload view matrix
   void uploadView();
 
-  // cpu representation of model
-  model_object planet_object;
-  model_object stars_object;
-  model_object orbit_object;
+  // map for cpu representation of models
+  std::map<std::string, model_object> model_objects{};
 
   // camera transform matrix
   glm::fmat4 m_view_transform;
