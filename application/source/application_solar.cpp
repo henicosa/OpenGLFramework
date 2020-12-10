@@ -74,7 +74,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
 
   // for moon
   
-
+  // for orbits
   for (auto node : nodes) {
     std::string orbit_name = node->getName() + "_orbit";
     model_objects[orbit_name] = model_object{};
@@ -82,6 +82,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
     auto tmat = node->getLocalTransform();
     float distance = tmat[3][0] + tmat[3][1] + tmat[3][2];
     //std::cout << distance;
+    // reduce number of iterations (50)
     std::vector<float> orbit_data{};
     for (int d = 0; d< 256; d++) {
       orbit_data.push_back(sin(double(d)/256*2*M_PI)*distance);
@@ -137,8 +138,6 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
       stars_data.push_back(1 - float(rand() % 200)/500.0f);
     }
 
-    initializeGeometry();
-    initializeShaderPrograms();
   }
 
   /*DEBUG for (auto i : stars_data)
@@ -186,6 +185,9 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
 
   //glEnableVertexAttribArray()
   //glVertexAttribPointer()
+
+  initializeGeometry();
+  initializeShaderPrograms();
 }
 
 ApplicationSolar::~ApplicationSolar() {
@@ -231,8 +233,6 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
 
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                       1, GL_FALSE, glm::value_ptr(node->getWorldTransform()));
-    //glUniformMatrix4fv(m_shaders.at("orbit").u_locs.at("ModelMatrix"),
-    //                  1, GL_FALSE, glm::value_ptr(node->getWorldTransform()));
 
     // extra matrix for normal transformation to keep them orthogonal to surface
     glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * node->getWorldTransform());
@@ -244,6 +244,12 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
 
     // draw bound vertex array using bound shader
     glDrawElements(model_objects.at("planet").draw_mode, model_objects.at("planet").num_elements, model::INDEX.type, NULL);
+
+    // Handle orbits here
+
+
+    //glUniformMatrix4fv(m_shaders.at("orbit").u_locs.at("ModelMatrix"),
+    //                  1, GL_FALSE, glm::value_ptr(node->getWorldTransform()));
   }
 
   // Repeat rendering for all childrens
