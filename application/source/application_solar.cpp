@@ -5,6 +5,7 @@
 #include "shader_loader.hpp"
 #include "model_loader.hpp"
 #include "node.hpp"
+#include "geometry_node.hpp"
 #include "scene_graph.hpp"
 
 // foreach
@@ -37,37 +38,66 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
   std::vector<std::shared_ptr<Node>> nodes{};
 
   scene = SceneGraph::getInstance();
-  std::shared_ptr<Node> p0 = std::make_shared<Node>(Node(scene->getRoot(), "sun", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.5f));
+  std::shared_ptr<Node> p0 = std::make_shared<Node>(Node(scene->getRoot(), "sun_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.5f));
   scene->getRoot()->addChildren(p0);
   nodes.push_back(p0);
-  std::shared_ptr<Node> p1 = std::make_shared<Node>(Node(scene->getRoot(), "mercury", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 5.0f}), glm::fmat4(), 2.0f));
+  std::shared_ptr<GeometryNode> pp0 = std::make_shared<GeometryNode>(GeometryNode(p0, "sun", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.0f, model{}, glm::vec3(1.0,1.0,1.0)));
+  // error is here
+  p0->addChildren(std::dynamic_pointer_cast<Node>(pp0));
+
+  std::shared_ptr<Node> p1 = std::make_shared<Node>(Node(scene->getRoot(), "mercury_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 5.0f}), glm::fmat4(), 2.0f));
   scene->getRoot()->addChildren(p1);
   nodes.push_back(p1);
-  std::shared_ptr<Node> p2 = std::make_shared<Node>(Node(scene->getRoot(), "venus", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 8.0f}), glm::fmat4(), 0.6f));
+  std::shared_ptr<Node> pp1 = std::make_shared<Node>(GeometryNode(p1, "mercury", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.0f, model{}, glm::vec3(1.0,0.5,0.2)));
+  p1->addChildren(pp1);
+
+  std::shared_ptr<Node> p2 = std::make_shared<Node>(Node(scene->getRoot(), "venus_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 8.0f}), glm::fmat4(), 0.6f));
   scene->getRoot()->addChildren(p2);
   nodes.push_back(p2);
-  std::shared_ptr<Node> p3 = std::make_shared<Node>(Node(scene->getRoot(), "earth", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 12.0f}), glm::fmat4(), 0.3f));
+  std::shared_ptr<Node> pp2 = std::make_shared<Node>(GeometryNode(p2, "venus", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.3f, model{}, glm::vec3(0.5,0.5,0.2)));
+  p2->addChildren(pp2);
+
+  std::shared_ptr<Node> p3 = std::make_shared<Node>(Node(scene->getRoot(), "earth_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 12.0f}), glm::fmat4(), 0.3f));
   scene->getRoot()->addChildren(p3);
   nodes.push_back(p3);
-  std::shared_ptr<Node> p4 = std::make_shared<Node>(Node(scene->getRoot(), "mars", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 15.0f}), glm::fmat4(), 0.34f));
+  std::shared_ptr<Node> pp3 = std::make_shared<Node>(GeometryNode(p3, "earth", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.2f, model{}, glm::vec3(0.2,0.4,1.0)));
+  p3->addChildren(pp3);
+
+  std::shared_ptr<Node> p4 = std::make_shared<Node>(Node(scene->getRoot(), "mars_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 15.0f}), glm::fmat4(), 0.34f));
   scene->getRoot()->addChildren(p4);
   nodes.push_back(p4);
+  std::shared_ptr<Node> pp4 = std::make_shared<Node>(GeometryNode(p4, "mars", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.0f, model{}, glm::vec3(0.2,0.1,1.0)));
+  p4->addChildren(pp4);
+
   std::shared_ptr<Node> p5 = std::make_shared<Node>(Node(scene->getRoot(), "jupiter", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 30.0f}), glm::fmat4(), 0.6f));
   //scene->getRoot()->addChildren(p5);
   //nodes.push_back(p5);
-  std::shared_ptr<Node> p6 = std::make_shared<Node>(Node(scene->getRoot(), "saturn", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 50.0f}), glm::fmat4(), 0.2f));
+
+
+  std::shared_ptr<Node> p6 = std::make_shared<Node>(Node(scene->getRoot(), "saturn_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 50.0f}), glm::fmat4(), 0.2f));
   scene->getRoot()->addChildren(p6);
   nodes.push_back(p6);
-  std::shared_ptr<Node> p7 = std::make_shared<Node>(Node(scene->getRoot(), "uranus", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 57.0f}), glm::fmat4(), 0.1f));
+  std::shared_ptr<Node> pp6 = std::make_shared<Node>(GeometryNode(p6, "saturn", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.3f, model{}, glm::vec3(1.0,1.0,0.2)));
+  p6->addChildren(pp6);
+
+  std::shared_ptr<Node> p7 = std::make_shared<Node>(Node(scene->getRoot(), "uranus_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 57.0f}), glm::fmat4(), 0.1f));
   scene->getRoot()->addChildren(p7);
   nodes.push_back(p7);
-  std::shared_ptr<Node> p8 = std::make_shared<Node>(Node(scene->getRoot(), "jupiter", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 70.0f}), glm::fmat4(), 0.3f));
+  std::shared_ptr<Node> pp7 = std::make_shared<Node>(GeometryNode(p7, "uranus", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.1f, model{}, glm::vec3(0.7,0.5,1.0)));
+  p7->addChildren(pp7);
+
+  std::shared_ptr<Node> p8 = std::make_shared<Node>(Node(scene->getRoot(), "jupiter_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 70.0f}), glm::fmat4(), 0.3f));
   scene->getRoot()->addChildren(p8);
   nodes.push_back(p8);
-  std::shared_ptr<Node> m1 = std::make_shared<Node>(Node(p3, "moon", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 2.0f}), glm::fmat4(), 1.0f));
-  scene->getRoot()->getChildren("earth")->addChildren(m1);
+  std::shared_ptr<Node> pp8 = std::make_shared<Node>(GeometryNode(p8, "jupiter", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.3f, model{}, glm::vec3(0.9,1.0,0.4)));
+  p8->addChildren(pp8);
+
+  std::shared_ptr<Node> m1 = std::make_shared<Node>(Node(p3, "moon_handle", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 2.0f}), glm::fmat4(), 1.0f));
+  scene->getRoot()->getChildren("earth_handle")->addChildren(m1);
+  std::shared_ptr<Node> mm1 = std::make_shared<Node>(GeometryNode(m1, "moon", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 0.0f}), glm::fmat4(), 0.2f, model{}, glm::vec3(0.4,0.4,0.4)));
+  m1->addChildren(mm1);
   //std::shared_ptr<Node> cam = std::make_shared<Node>(CameraNode(p3, "moon", glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 2.0f}), glm::fmat4(), 1.0f, true, true, glm::fmat4()));
-  scene->getRoot()->getChildren("earth")->addChildren(m1);
+
 
   model_objects["planet"] = model_object{};
   model_objects["stars"] = model_object{};

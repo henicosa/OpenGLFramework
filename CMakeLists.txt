@@ -87,6 +87,9 @@ if(NOT APPLE)
 
     add_executable(7_node application/source/node.cpp)
       target_link_libraries(7_node framework)
+      
+    add_executable(8_geometry_node application/source/geometry_node.cpp)
+      target_link_libraries(8_geometry_node framework)
   endif()
 endif()
 
