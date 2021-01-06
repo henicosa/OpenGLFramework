@@ -76,7 +76,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
   
   // for orbits
   for (auto node : nodes) {
-    std::string orbit_name = node->getName() + "_orbit";
+    std::string orbit_name = "orbit";//node->getName() + "_orbit";
     model_objects[orbit_name] = model_object{};
     // generate orbit data
     auto tmat = node->getLocalTransform();
@@ -313,13 +313,16 @@ void ApplicationSolar::initializeShaderPrograms() {
       m_shaders.at(model_pair.first).u_locs["ProjectionMatrix"] = -1;
     }
   }*/
+
+  // initialize each shader without loop
   for (auto model_pair : model_objects) {
     if (model_pair.first != "planet") {
-      m_shaders.emplace(model_pair.first, shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/stars.vert"},
-                                              {GL_FRAGMENT_SHADER, m_resource_path + "shaders/stars.frag"}}});
+      m_shaders.emplace(model_pair.first, shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/"+model_pair.first+".vert"},
+                                              {GL_FRAGMENT_SHADER, m_resource_path + "shaders/"+model_pair.first+".frag"}}});
       // request uniform locations for shader program
       //m_shaders.at("stars").u_locs["NormalMatrix"] = -1;
       //if (model_pair.first == "orbit") m_shaders.at(model_pair.first).u_locs["ModelMatrix"] = -1;
+      if (model_pair.first == "orbit") m_shaders.at(model_pair.first).u_locs["ModelMatrix"] = -1;
       m_shaders.at(model_pair.first).u_locs["ViewMatrix"] = -1;
       m_shaders.at(model_pair.first).u_locs["ProjectionMatrix"] = -1;
     }
