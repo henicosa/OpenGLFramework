@@ -8,6 +8,9 @@
 #include <memory>
 #include <glm/matrix.hpp>
 
+//#include "application_solar.hpp"
+//#include "geometry_node.hpp"
+
 
 class Node {
  public:
@@ -28,6 +31,7 @@ class Node {
   int getDepth() const;
   float getRotation() const;
 
+
   //
   // setter
   //
@@ -38,6 +42,10 @@ class Node {
   // modify Children List
   void addChildren(std::shared_ptr<Node> node);
   std::shared_ptr<Node> removeChildren(std::string node_name);
+
+  // render
+  bool isType(std::string typ);
+  //void render(std::map<std::string, shader_program> m_shaders, std::map<std::string, model_object> model_objects, const ApplicationSolar* appSol);
 
   // protected for child classes access 
  protected:
@@ -57,6 +65,7 @@ class Node {
   std::list<std::shared_ptr<Node>> children;
   // rotation factor applied in rendering
   float rotation;
+  std::string type = "node";
 
 };
 

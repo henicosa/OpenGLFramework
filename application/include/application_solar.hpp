@@ -30,6 +30,9 @@ class ApplicationSolar : public Application {
   // draw all objects
   void render() const;
   void traverse_render(std::shared_ptr<Node> node) const;
+  
+  // getter
+  glm::fmat4 getMViewTransform();
 
  protected:
   void initializeShaderPrograms();
@@ -43,6 +46,7 @@ class ApplicationSolar : public Application {
 
   // map for cpu representation of models
   std::map<std::string, model_object> model_objects{};
+  std::map<std::string, glm::vec3> planet_colors{};
 
   // camera transform matrix
   glm::fmat4 m_view_transform;

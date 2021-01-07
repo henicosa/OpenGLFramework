@@ -9,11 +9,22 @@ uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ProjectionMatrix;
 uniform mat4 NormalMatrix;
+//uniform vec3 Color;
+//uniform vec3 ambient_color;
+//uniform vec3 in_light;
+
+out vec3 WorldPosition;
+out vec3 WorldNormal;
 
 out vec3 pass_Normal;
 
 void main(void)
 {
+	// normal in world space
+	WorldNormal = inverse(transpose(mat3(ModelMatrix))) * in_Normal;
+
+	// position in world space
+	WorldPosition = vec3(ModelMatrix * vec4(in_Position, 1.0));
+
 	gl_Position = (ProjectionMatrix  * ViewMatrix * ModelMatrix) * vec4(in_Position, 1.0);
-	pass_Normal = vec3(0.5,0.5,0.5);//(NormalMatrix * vec4(in_Normal, 0.0)).xyz;
 }

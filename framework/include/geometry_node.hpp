@@ -4,10 +4,9 @@
 #include "node.hpp"
 #include "model.hpp"
 
-class GeometryNode : protected Node {
+class GeometryNode : public Node {
  public:
   GeometryNode(std::shared_ptr<Node> pr, std::string const& n, glm::fmat4 const& lmat, glm::fmat4 const& wmat, float r, model geo, glm::vec3 col);
-
   //
   // getter
   //
@@ -22,7 +21,7 @@ class GeometryNode : protected Node {
 
  protected:
   model geometry;
-  glm::vec3 color;
+  glm::vec3 color; 
 };
 
 #endif

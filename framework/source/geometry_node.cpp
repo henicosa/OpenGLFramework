@@ -8,7 +8,9 @@ GeometryNode::GeometryNode(std::shared_ptr<Node> pr, std::string const& n, glm::
  :Node(pr, n, lmat, wmat, r)
  ,geometry(geo)
  ,color(col)
-{}
+{
+  type = "geometry_node";
+}
 
   //
   // getter
@@ -16,7 +18,7 @@ GeometryNode::GeometryNode(std::shared_ptr<Node> pr, std::string const& n, glm::
   model GeometryNode::getGeometry() const {
     return geometry;
   }
-  glm::vec3 GeometryNode::getColor() const {
+  glm::vec3 GeometryNode::getColor() const{
     return color;
   }
 
