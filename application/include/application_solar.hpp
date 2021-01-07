@@ -48,6 +48,9 @@ class ApplicationSolar : public Application {
   std::map<std::string, model_object> model_objects{};
   std::map<std::string, glm::vec3> planet_colors{};
 
+  // change render to cel render flag
+  bool cel_render = true;
+
   // camera transform matrix
   glm::fmat4 m_view_transform;
   // camera projection matrix

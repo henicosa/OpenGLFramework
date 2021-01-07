@@ -266,7 +266,12 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
 
     if (node->isType("geometry_node")) {
 
-      glUseProgram(m_shaders.at("planet").handle);
+      std::string render_option = "planet_cel";
+      if (cel_render) {
+        render_option = "planet";
+      }
+
+      glUseProgram(m_shaders.at(render_option).handle);
 
       // Transformation from parent * Rotation from Time (scale with factor), rotation axis
 
@@ -274,40 +279,40 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
 
       // save transformation in WorldTransformation node
 
-      glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
+      glUniformMatrix4fv(m_shaders.at(render_option).u_locs.at("ModelMatrix"),
                         1, GL_FALSE, glm::value_ptr(node->getWorldTransform()));
 
       // extra matrix for normal transformation to keep them orthogonal to surface
       glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * node->getWorldTransform());
-      glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"),
+      glUniformMatrix4fv(m_shaders.at(render_option).u_locs.at("NormalMatrix"),
                         1, GL_FALSE, glm::value_ptr(normal_matrix));
 
      // GeometryNode* test = std::static_cast<GeometryNode *> (node);
       //std::cout <<  << std::endl;
       std::string name = node->getName();
-      glUniform3fv(m_shaders.at("planet").u_locs.at("Color"),
+      glUniform3fv(m_shaders.at(render_option).u_locs.at("Color"),
                           1, glm::value_ptr(planet_colors.at(name))
                           );
       
-      glUniform3fv(m_shaders.at("planet").u_locs.at("CameraPosition"),
+      glUniform3fv(m_shaders.at(render_option).u_locs.at("CameraPosition"),
                           1, glm::value_ptr(glm::vec3(m_view_transform[3].x, m_view_transform[3].y, m_view_transform[3].z))
                           );
 
-      glUniform3fv(m_shaders.at("planet").u_locs.at("LightColor"),
+      glUniform3fv(m_shaders.at(render_option).u_locs.at("LightColor"),
                           1, glm::value_ptr(glm::vec3(1,1,1))
                           );
 
-      glUniform3fv(m_shaders.at("planet").u_locs.at("LightPosition"),
+      glUniform3fv(m_shaders.at(render_option).u_locs.at("LightPosition"),
                           1, glm::value_ptr(glm::vec3(0,0,2))
                           );
       
-      glUniform1f(m_shaders.at("planet").u_locs.at("LightIntensity"), 80.0f);
+      glUniform1f(m_shaders.at(render_option).u_locs.at("LightIntensity"), 80.0f);
                           
       // bind the VAO to draw
-      glBindVertexArray(model_objects.at("planet").vertex_AO);
+      glBindVertexArray(model_objects.at(render_option).vertex_AO);
 
       // draw bound vertex array using bound shader
-      glDrawElements(model_objects.at("planet").draw_mode, model_objects.at("planet").num_elements, model::INDEX.type, NULL);
+      glDrawElements(model_objects.at(render_option).draw_mode, model_objects.at("planet").num_elements, model::INDEX.type, NULL);
 
       //node->render(m_shaders, model_objects, this);
       // Handle orbits here
@@ -371,6 +376,20 @@ void ApplicationSolar::initializeShaderPrograms() {
   m_shaders.at("planet").u_locs["LightColor"] = -1;
   m_shaders.at("planet").u_locs["LightPosition"] = -1;
   m_shaders.at("planet").u_locs["LightIntensity"] = -1;
+
+  // store shader program objects in container
+  m_shaders.emplace("planet_cel", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/simple copy.vert"},
+                                           {GL_FRAGMENT_SHADER, m_resource_path + "shaders/simple.frag"}}});
+  // request uniform locations for shader program
+  m_shaders.at("planet_cel").u_locs["NormalMatrix"] = -1;
+  m_shaders.at("planet_cel").u_locs["ModelMatrix"] = -1;
+  m_shaders.at("planet_cel").u_locs["ViewMatrix"] = -1;
+  m_shaders.at("planet_cel").u_locs["ProjectionMatrix"] = -1;
+  m_shaders.at("planet_cel").u_locs["Color"] = -1;
+  m_shaders.at("planet_cel").u_locs["CameraPosition"] = -1;
+  m_shaders.at("planet_cel").u_locs["LightColor"] = -1;
+  m_shaders.at("planet_cel").u_locs["LightPosition"] = -1;
+  m_shaders.at("planet_cel").u_locs["LightIntensity"] = -1;
   // for stars
 
   /*for (auto model_pair : model_objects) {
@@ -459,6 +478,10 @@ void ApplicationSolar::keyCallback(int key, int action, int mods) {
   } else if (key == GLFW_KEY_X  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
     m_view_transform = glm::translate(m_view_transform, glm::fvec3{0.0f, -0.1f, 0.0f});
     uploadView();
+  } else if (key == GLFW_KEY_1  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    cel_render = false;
+  } else if (key == GLFW_KEY_2  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    cel_render = true;
   }
 }
 
