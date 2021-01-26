@@ -41,7 +41,7 @@ void main() {
   float specAngle = max(dot(halfDir, normal), 0.0);
   vec3 specular_part = vec3(0,0,0);
   if (specAngle > 0.99) {
-    specular_part = 5 * Color * pow(1, shininess);
+    specular_part = 5 * Color;
   }
 
   

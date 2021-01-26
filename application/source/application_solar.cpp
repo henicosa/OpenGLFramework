@@ -306,7 +306,7 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
                           1, glm::value_ptr(glm::vec3(0,0,2))
                           );
       
-      glUniform1f(m_shaders.at(render_option).u_locs.at("LightIntensity"), 80.0f);
+      glUniform1f(m_shaders.at(render_option).u_locs.at("LightIntensity"), 100.0f);
                           
       // bind the VAO to draw
       glBindVertexArray(model_objects.at(render_option).vertex_AO);
@@ -365,7 +365,7 @@ void ApplicationSolar::uploadUniforms() {
 void ApplicationSolar::initializeShaderPrograms() {
   // store shader program objects in container
   m_shaders.emplace("planet", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/simple.vert"},
-                                           {GL_FRAGMENT_SHADER, m_resource_path + "shaders/simple.frag"}}});
+                                           {GL_FRAGMENT_SHADER, m_resource_path + "shaders/cel.frag"}}});
   // request uniform locations for shader program
   m_shaders.at("planet").u_locs["NormalMatrix"] = -1;
   m_shaders.at("planet").u_locs["ModelMatrix"] = -1;
