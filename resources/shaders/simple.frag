@@ -18,9 +18,12 @@ void main() {
   //normal on point
   vec3 normal = normalize(WorldNormal);
   //vec3 diffuseColor = LightIntensity * LightColor  / distance;
+
+  // apply inverse mercator projection from lecture
   vec2 TexCoord = vec2((atan(-normal.z, normal.x) / 3.1415926 + 1.0) * 0.5,
                                 (asin(normal.y) / 3.1415926 + 0.5));
-  //
+
+  // load color from 2D texture
   vec4 colourfromtex = texture2D(MyTexture, TexCoord);
 
   // ambient component
@@ -38,11 +41,12 @@ void main() {
   float shininess = 260;
   //vec3 h = (lightDirection + cameraDirection) / length(lightDirection + cameraDirection);
   //vec3 specular_part = Color * pow(max(dot(h, cameraDirection),0),4*shininess);
+
   //source: Wikipedia @ https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
   vec3 halfDir = normalize(lightDirection + cameraDirection);
   float specAngle = max(dot(halfDir, normal), 0.0);
-  vec3 specular_part = 5 * Color * pow(specAngle, shininess);
+  vec3 specular_part = 5 * colourfromtex.xyz * pow(specAngle, shininess);
 
-  vec3 combinedColor = colourfromtex.xyz;//ambient_part + beta*(diffuse_part + specular_part);
+  vec3 combinedColor = ambient_part + beta*(diffuse_part + specular_part);
   out_Color = vec4(combinedColor, 1.0);
 }

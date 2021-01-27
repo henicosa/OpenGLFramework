@@ -429,6 +429,8 @@ void ApplicationSolar::initializeGeometry() {
 
   std::string planet_name = "";
 
+  // load each planet in a different active texture
+
   planet_name = "sun";
   glActiveTexture(GL_TEXTURE0);
   initializeTexture(planet_name);
@@ -567,12 +569,19 @@ glm::fmat4 ApplicationSolar::getMViewTransform() {
   return m_view_transform;
 }
 
+// help method to initialize textures
 void ApplicationSolar::initializeTexture(std::string planet_name) {
+  // source for texture: https://learnopengl.com/Getting-started/Textures
   unsigned int texture_int;
+  // generate textures
   glGenTextures(1,&texture_int);
+  // bind textures
   glBindTexture(GL_TEXTURE_2D,texture_int);
+  // set filter parameters
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // load texture from png file
   pixel_data texture = texture_loader::file(m_resource_path + "textures/"+ planet_name + "map.png");
+  // process texture by file parameters
   glTexImage2D(GL_TEXTURE_2D,0,texture.channels,texture.width,texture.height,0,texture.channels,texture.channel_type,texture.ptr());
 }
