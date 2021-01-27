@@ -7,6 +7,7 @@
 #include "node.hpp"
 #include "geometry_node.hpp"
 #include "scene_graph.hpp"
+#include "texture_loader.hpp"
 
 // foreach
 #include <algorithm>
@@ -423,6 +424,7 @@ void ApplicationSolar::initializeShaderPrograms() {
 void ApplicationSolar::initializeGeometry() {
   model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL);
 
+  pixel_data texture = texture_loader::file(m_resource_path + "textures/sunmap.jpg");
   // generate vertex array object
   glGenVertexArrays(1, &model_objects.at("planet").vertex_AO);
   // bind the array for attaching buffers
