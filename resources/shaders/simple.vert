@@ -17,6 +17,7 @@ out vec3 WorldPosition;
 out vec3 WorldNormal;
 
 out vec3 pass_Normal;
+// source for texture: https://learnopengl.com/Getting-started/Textures
 
 void main(void)
 {
@@ -25,6 +26,8 @@ void main(void)
 
 	// position in world space
 	WorldPosition = vec3(ModelMatrix * vec4(in_Position, 1.0));
+	pass_Normal = normalize(pass_Normal);
 
 	gl_Position = (ProjectionMatrix  * ViewMatrix * ModelMatrix) * vec4(in_Position, 1.0);
+
 }

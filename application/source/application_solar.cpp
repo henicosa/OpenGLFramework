@@ -272,11 +272,13 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
         render_option = "planet";
       }
 
+      // for texture
+      int sampler_location = glGetUniformLocation(m_shaders.at(render_option).handle, "MyTexture");         
+
       glUseProgram(m_shaders.at(render_option).handle);
 
-      // Transformation from parent * Rotation from Time (scale with factor), rotation axis
-
-      
+      // load texture
+      glUniform1i(sampler_location, planet_textures.at(node->getName()));
 
       // save transformation in WorldTransformation node
 
@@ -308,7 +310,8 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
                           );
       
       glUniform1f(m_shaders.at(render_option).u_locs.at("LightIntensity"), 100.0f);
-                          
+
+                 
       // bind the VAO to draw
       glBindVertexArray(model_objects.at(render_option).vertex_AO);
 
@@ -366,7 +369,7 @@ void ApplicationSolar::uploadUniforms() {
 void ApplicationSolar::initializeShaderPrograms() {
   // store shader program objects in container
   m_shaders.emplace("planet", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/simple.vert"},
-                                           {GL_FRAGMENT_SHADER, m_resource_path + "shaders/cel.frag"}}});
+                                           {GL_FRAGMENT_SHADER, m_resource_path + "shaders/simple.frag"}}});
   // request uniform locations for shader program
   m_shaders.at("planet").u_locs["NormalMatrix"] = -1;
   m_shaders.at("planet").u_locs["ModelMatrix"] = -1;
@@ -424,8 +427,61 @@ void ApplicationSolar::initializeShaderPrograms() {
 void ApplicationSolar::initializeGeometry() {
   model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL);
 
-  pixel_data texture = texture_loader::file(m_resource_path + "textures/sunmap.jpg");
-  // generate vertex array object
+  std::string planet_name = "";
+
+  planet_name = "sun";
+  glActiveTexture(GL_TEXTURE0);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 0;
+
+  planet_name = "mercury";
+  glActiveTexture(GL_TEXTURE1);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 1;
+
+  planet_name = "venus";
+  glActiveTexture(GL_TEXTURE2);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 2;
+
+  planet_name = "earth";
+  glActiveTexture(GL_TEXTURE3);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 3;
+
+  planet_name = "mars";
+  glActiveTexture(GL_TEXTURE4);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 4;
+
+  planet_name = "jupiter";
+  glActiveTexture(GL_TEXTURE5);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 5;
+
+  planet_name = "saturn";
+  glActiveTexture(GL_TEXTURE6);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 6;
+
+  planet_name = "uranus";
+  glActiveTexture(GL_TEXTURE7);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 7;
+
+  planet_name = "neptune";
+  glActiveTexture(GL_TEXTURE8);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 8;
+
+  planet_name = "pluto";
+  glActiveTexture(GL_TEXTURE9);
+  initializeTexture(planet_name);
+  planet_textures[planet_name] = 9;
+  planet_textures["moon"] = 9;
+
+
+
   glGenVertexArrays(1, &model_objects.at("planet").vertex_AO);
   // bind the array for attaching buffers
   glBindVertexArray(model_objects.at("planet").vertex_AO);
@@ -509,4 +565,14 @@ int main(int argc, char* argv[]) {
 
 glm::fmat4 ApplicationSolar::getMViewTransform() {
   return m_view_transform;
+}
+
+void ApplicationSolar::initializeTexture(std::string planet_name) {
+  unsigned int texture_int;
+  glGenTextures(1,&texture_int);
+  glBindTexture(GL_TEXTURE_2D,texture_int);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  pixel_data texture = texture_loader::file(m_resource_path + "textures/"+ planet_name + "map.png");
+  glTexImage2D(GL_TEXTURE_2D,0,texture.channels,texture.width,texture.height,0,texture.channels,texture.channel_type,texture.ptr());
 }

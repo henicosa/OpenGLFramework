@@ -30,6 +30,7 @@ class ApplicationSolar : public Application {
   // draw all objects
   void render() const;
   void traverse_render(std::shared_ptr<Node> node) const;
+  void initializeTexture(std::string planet_name);
   
   // getter
   glm::fmat4 getMViewTransform();
@@ -47,6 +48,7 @@ class ApplicationSolar : public Application {
   // map for cpu representation of models
   std::map<std::string, model_object> model_objects{};
   std::map<std::string, glm::vec3> planet_colors{};
+  std::map<std::string, int> planet_textures{};
 
   // change render to cel render flag
   bool cel_render = true;

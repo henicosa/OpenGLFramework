@@ -10,6 +10,7 @@ uniform vec3 LightColor;
 uniform vec3 LightPosition;
 uniform vec3 Color;
 uniform vec3 CameraPosition;
+uniform sampler2D MyTexture;
 
 void main() {
   // distance between World and Light
@@ -17,6 +18,10 @@ void main() {
   //normal on point
   vec3 normal = normalize(WorldNormal);
   //vec3 diffuseColor = LightIntensity * LightColor  / distance;
+  vec2 TexCoord = vec2((atan(-normal.z, normal.x) / 3.1415926 + 1.0) * 0.5,
+                                (asin(normal.y) / 3.1415926 + 0.5));
+  //
+  vec4 colourfromtex = texture2D(MyTexture, TexCoord);
 
   // ambient component
   vec3 ambient_part = LightColor * 0.1;
@@ -26,7 +31,7 @@ void main() {
 
   // diffuse component
   float reflectivity = 10;
-  vec3 diffuse_part = Color * dot(lightDirection, normal) * (reflectivity/3.141);
+  vec3 diffuse_part = colourfromtex.xyz * dot(lightDirection, normal) * (reflectivity/3.141);
 
   // specular component
   vec3 cameraDirection = normalize(CameraPosition - WorldPosition);
@@ -38,6 +43,6 @@ void main() {
   float specAngle = max(dot(halfDir, normal), 0.0);
   vec3 specular_part = 5 * Color * pow(specAngle, shininess);
 
-  vec3 combinedColor = ambient_part + beta*(diffuse_part + specular_part);
+  vec3 combinedColor = colourfromtex.xyz;//ambient_part + beta*(diffuse_part + specular_part);
   out_Color = vec4(combinedColor, 1.0);
 }
