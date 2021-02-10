@@ -287,17 +287,18 @@ void ApplicationSolar::render() const {
 
   // render to standard Framebuffer
   glBindFramebuffer(GL_FRAMEBUFFER, 0);  
-  glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
   glClear(GL_COLOR_BUFFER_BIT);
-
-  glActiveTexture(GL_TEXTURE10);
   
   // activate frame shader
   glUseProgram(m_shaders.at("frame").handle);
-  glBindVertexArray(model_objects.at("screen").vertex_AO);
+
+  glActiveTexture(GL_TEXTURE11);
   glDisable(GL_DEPTH_TEST);
-  glBindTexture(GL_TEXTURE_2D, screenTexture);
+  int sampler_location = glGetUniformLocation(m_shaders.at("frame").handle, "screenTexture");
+  glUniform1i(sampler_location, 11);
+  glBindTexture(GL_TEXTURE_2D, 11);
+  glBindVertexArray(model_objects.at("screen").vertex_AO);
   glDrawArrays(GL_TRIANGLES, 0, 6); 
 
 }
@@ -531,6 +532,40 @@ void ApplicationSolar::initializeGeometry() {
   planet_textures[planet_name] = 9;
   planet_textures["moon"] = 9;
 
+  // create FrameBuffer
+  // source: https://learnopengl.com/Advanced-OpenGL/Framebuffers
+  glGenFramebuffers(1, &myFbo);
+  
+  // source: https://learnopengl.com/Advanced-OpenGL/Framebuffers
+  // bind FrameBuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, myFbo);  
+
+  // create texture for color attachment
+  glActiveTexture(GL_TEXTURE11);
+  glGenTextures(1, &screenTexture);
+  glBindTexture(GL_TEXTURE_2D, screenTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, initial_resolution.x, initial_resolution.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
+  glBindTexture(GL_TEXTURE_2D, 11);
+  
+  // attach it to the framebuffer
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+
+  // create RenderBufferObject for depth attachment
+  unsigned int rbo;
+  glGenRenderbuffers(1, &rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, initial_resolution.x, initial_resolution.y);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  // attach it to the framebuffer
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);  
+
+  // Debug test
+  if(not (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)) 
+    std::cout << "Framebuffer NOT complete :( \n";
+
 
 
   glGenVertexArrays(1, &model_objects.at("planet").vertex_AO);
@@ -564,40 +599,6 @@ void ApplicationSolar::initializeGeometry() {
   model_objects.at("planet").draw_mode = GL_TRIANGLES;
   // transfer number of indices to model object 
   model_objects.at("planet").num_elements = GLsizei(planet_model.indices.size());
-
-  // create FrameBuffer
-  // source: https://learnopengl.com/Advanced-OpenGL/Framebuffers
-  glGenFramebuffers(1, &myFbo);
-
-    // bind FrameBuffer
-  glBindFramebuffer(GL_FRAMEBUFFER, myFbo);  
-
-  // create texture for color attachment
-  glActiveTexture(GL_TEXTURE10);
-  glGenTextures(1, &screenTexture);
-  glBindTexture(GL_TEXTURE_2D, screenTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
-  glBindTexture(GL_TEXTURE_2D, 0);
-  
-  // attach it to the framebuffer
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
-
-  // create RenderBufferObject for depth attachment
-  unsigned int rbo;
-  glGenRenderbuffers(1, &rbo);
-  glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 800, 600);
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-  // attach it to the framebuffer
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);  
-
-  // Debug test
-  if(not (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)) 
-    std::cout << "Framebuffer NOT complete :( \n";
-
 
 }
 
@@ -641,6 +642,40 @@ void ApplicationSolar::resizeCallback(unsigned width, unsigned height) {
   m_view_projection = utils::calculate_projection_matrix(float(width) / float(height));
   // upload new projection matrix
   uploadProjection();
+
+  // create FrameBuffer
+  // source: https://learnopengl.com/Advanced-OpenGL/Framebuffers
+  glGenFramebuffers(1, &myFbo);
+
+  // source: https://learnopengl.com/Advanced-OpenGL/Framebuffers
+  // bind FrameBuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, myFbo);  
+
+  // create texture for color attachment
+  glActiveTexture(GL_TEXTURE11);
+  glGenTextures(1, &screenTexture);
+  glBindTexture(GL_TEXTURE_2D, screenTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
+  glBindTexture(GL_TEXTURE_2D, 11);
+  
+  // attach it to the framebuffer
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+
+  // create RenderBufferObject for depth attachment
+  unsigned int rbo;
+  glGenRenderbuffers(1, &rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  // attach it to the framebuffer
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);  
+
+  // Debug test
+  if(not (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)) 
+    std::cout << "Framebuffer NOT complete :( \n";
 }
 
 
