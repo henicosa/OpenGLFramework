@@ -297,6 +297,12 @@ void ApplicationSolar::render() const {
   glDisable(GL_DEPTH_TEST);
   int sampler_location = glGetUniformLocation(m_shaders.at("frame").handle, "screenTexture");
   glUniform1i(sampler_location, 11);
+  // uploading post processing effects
+  glUniform1i(m_shaders.at("frame").u_locs.at("negation"), negation);
+  glUniform1i(m_shaders.at("frame").u_locs.at("blur"), blur);
+  glUniform1i(m_shaders.at("frame").u_locs.at("mirrorV"), mirrorV);
+  glUniform1i(m_shaders.at("frame").u_locs.at("mirrorH"), mirrorH);
+  glUniform1i(m_shaders.at("frame").u_locs.at("luminance"), luminance);
   //glUniform2fv(m_shaders.at("frame").u_locs.at("windowSize"),
   //                        1, glm::value_ptr(glm::vec2(initial_resolution.x,initial_resolution.y)));
   glBindTexture(GL_TEXTURE_2D, 11);
@@ -460,6 +466,11 @@ void ApplicationSolar::initializeShaderPrograms() {
   m_shaders.emplace("frame", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/frame.vert"},
                                            {GL_FRAGMENT_SHADER, m_resource_path + "shaders/frame.frag"}}});
   m_shaders.at("frame").u_locs["screenTexture"] = -1;
+  m_shaders.at("frame").u_locs["negation"] = -1;
+  m_shaders.at("frame").u_locs["mirrorV"] = -1;
+  m_shaders.at("frame").u_locs["mirrorH"] = -1;
+  m_shaders.at("frame").u_locs["luminance"] = -1;
+  m_shaders.at("frame").u_locs["blur"] = -1;
   // initialize each shader without loop
   for (auto model_pair : model_objects) {
     if (model_pair.first != "planet") {
@@ -629,6 +640,23 @@ void ApplicationSolar::keyCallback(int key, int action, int mods) {
     cel_render = false;
   } else if (key == GLFW_KEY_2  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
     cel_render = true;
+  } else if (key == GLFW_KEY_7  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    luminance = true;
+  } else if (key == GLFW_KEY_9  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    mirrorV = true;
+  } else if (key == GLFW_KEY_8  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    mirrorH = true;
+  } else if (key == GLFW_KEY_0  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    blur = true;
+  }  else if (key == GLFW_KEY_6  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    negation = true;
+  } else if (key == GLFW_KEY_5  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+    // reset post processing effects
+    blur = false;
+    negation = false;
+    mirrorH = false;
+    mirrorV = false;
+    luminance = false;
   }
 }
 

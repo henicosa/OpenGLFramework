@@ -64,6 +64,12 @@ class ApplicationSolar : public Application {
   // FrameBuffer
   unsigned int myFbo;
   unsigned int screenTexture;
+  // Post Processing
+  bool mirrorV = false;
+  bool mirrorH = false;
+  bool luminance = false;
+  bool blur = false;
+  bool negation = false;
   //std::shared_ptr<ApplicationVao> appvao;
 };
 
