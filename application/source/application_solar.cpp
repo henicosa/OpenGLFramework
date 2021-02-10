@@ -111,7 +111,29 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
   model_objects["planet"] = model_object{};
   model_objects["stars"] = model_object{};
 
-  // for moon
+  // for screen
+  // screen quad VAO
+  float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
+  unsigned int quadVAO, quadVBO;
+  model_objects["screen"] = model_object{};
+  glGenVertexArrays(1, &model_objects.at("screen").vertex_AO);
+  glGenBuffers(1, &model_objects.at("screen").vertex_BO);
+  glBindVertexArray(model_objects.at("screen").vertex_AO);
+  glBindBuffer(GL_ARRAY_BUFFER, model_objects.at("screen").vertex_BO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
   
   // for orbits
   for (auto node : nodes) {
@@ -241,11 +263,19 @@ ApplicationSolar::~ApplicationSolar() {
 
 // starts rendering process 
 void ApplicationSolar::render() const {
+
+  // render to custom framebuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, myFbo);
+  // vlear Buffers
+  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+  glEnable(GL_DEPTH_TEST);
+
   traverse_render(scene->getRoot());
 
 
   for (auto model_pair : model_objects) {
-    if (model_pair.first != "planet") {
+    if ((model_pair.first != "planet") and (model_pair.first != "screen")) {
       // Loading shader for stars
       glUseProgram(m_shaders.at(model_pair.first).handle);
       // bind the VAO to draw
@@ -254,6 +284,21 @@ void ApplicationSolar::render() const {
       glDrawArrays(model_objects.at(model_pair.first).draw_mode, 0, model_objects.at(model_pair.first).num_elements);
     }
   }
+
+  // render to standard Framebuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);  
+  glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glActiveTexture(GL_TEXTURE10);
+  
+  // activate frame shader
+  glUseProgram(m_shaders.at("frame").handle);
+  glBindVertexArray(model_objects.at("screen").vertex_AO);
+  glDisable(GL_DEPTH_TEST);
+  glBindTexture(GL_TEXTURE_2D, screenTexture);
+  glDrawArrays(GL_TRIANGLES, 0, 6); 
 
 }
 
@@ -309,7 +354,7 @@ void ApplicationSolar::traverse_render(std::shared_ptr<Node> node) const {
                           1, glm::value_ptr(glm::vec3(0,0,2))
                           );
       
-      glUniform1f(m_shaders.at(render_option).u_locs.at("LightIntensity"), 100.0f);
+      glUniform1f(m_shaders.at(render_option).u_locs.at("LightIntensity"), 50.0f);
 
                  
       // bind the VAO to draw
@@ -408,6 +453,10 @@ void ApplicationSolar::initializeShaderPrograms() {
     }
   }*/
 
+  // for screen shader
+  m_shaders.emplace("frame", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/frame.vert"},
+                                           {GL_FRAGMENT_SHADER, m_resource_path + "shaders/frame.frag"}}});
+  m_shaders.at("frame").u_locs["screenTexture"] = -1;
   // initialize each shader without loop
   for (auto model_pair : model_objects) {
     if (model_pair.first != "planet") {
@@ -515,6 +564,41 @@ void ApplicationSolar::initializeGeometry() {
   model_objects.at("planet").draw_mode = GL_TRIANGLES;
   // transfer number of indices to model object 
   model_objects.at("planet").num_elements = GLsizei(planet_model.indices.size());
+
+  // create FrameBuffer
+  // source: https://learnopengl.com/Advanced-OpenGL/Framebuffers
+  glGenFramebuffers(1, &myFbo);
+
+    // bind FrameBuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, myFbo);  
+
+  // create texture for color attachment
+  glActiveTexture(GL_TEXTURE10);
+  glGenTextures(1, &screenTexture);
+  glBindTexture(GL_TEXTURE_2D, screenTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
+  glBindTexture(GL_TEXTURE_2D, 0);
+  
+  // attach it to the framebuffer
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+
+  // create RenderBufferObject for depth attachment
+  unsigned int rbo;
+  glGenRenderbuffers(1, &rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 800, 600);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+  // attach it to the framebuffer
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);  
+
+  // Debug test
+  if(not (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)) 
+    std::cout << "Framebuffer NOT complete :( \n";
+
+
 }
 
 ///////////////////////////// callback functions for window events ////////////

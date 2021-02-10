@@ -60,6 +60,10 @@ class ApplicationSolar : public Application {
 
   // SceneGraph
   SceneGraph* scene;
+
+  // FrameBuffer
+  unsigned int myFbo;
+  unsigned int screenTexture;
   //std::shared_ptr<ApplicationVao> appvao;
 };
 

@@ -30,7 +30,7 @@ void main() {
   vec3 ambient_part = LightColor * 0.1;
 
   vec3 lightDirection = normalize(LightPosition - WorldPosition);
-  vec3 beta = (LightColor * LightIntensity) * (1/(4*3.141*pow(distance,2)));
+  vec3 beta = (LightColor * LightIntensity) * (1/(4*3.141*pow(distance,0.8)));
 
   // diffuse component
   float reflectivity = 10;
