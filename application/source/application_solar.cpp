@@ -297,6 +297,8 @@ void ApplicationSolar::render() const {
   glDisable(GL_DEPTH_TEST);
   int sampler_location = glGetUniformLocation(m_shaders.at("frame").handle, "screenTexture");
   glUniform1i(sampler_location, 11);
+  //glUniform2fv(m_shaders.at("frame").u_locs.at("windowSize"),
+  //                        1, glm::value_ptr(glm::vec2(initial_resolution.x,initial_resolution.y)));
   glBindTexture(GL_TEXTURE_2D, 11);
   glBindVertexArray(model_objects.at("screen").vertex_AO);
   glDrawArrays(GL_TRIANGLES, 0, 6); 
